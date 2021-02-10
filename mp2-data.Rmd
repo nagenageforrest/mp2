@@ -1,0 +1,32 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+```
+
+## Import and clean
+
+```{r import, include=FALSE, warning=FALSE, error=FALSE}
+raw <- readr::read_csv("mp2.csv", col_types = cols(`pol-score` = col_integer(), 
+                                                   `safety-score` = col_integer()))
+```
+
+
+```{r clean, include=FALSE}
+proc <- raw %>%
+  slice(3:length(ResponseId))%>%
+  mutate(pol = ifelse(`pol-score`==1, "liberal", 
+                      ifelse(`pol-score`==2, "moderate", "conservative"))) %>%
+  select(politician, police,
+         pol, safety = `safety-score`)
+
+data <- proc %>%
+  unite(col = cond, c(politician,police), sep = "_", remove = F) 
+
+head(data)
+```
